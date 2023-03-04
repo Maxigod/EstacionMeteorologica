@@ -6,7 +6,8 @@
 Adafruit_AHTX0 aht;
 Adafruit_BMP280 bmp; // I2C
 
-const int adcPin = 34; // Pin del ADC en el ESP32
+const byte ledPin=5; // the number of the LED pin
+bool successAHT=false;
 // set the LCD number of columns and rows
 int lcdColumns = 16;
 int lcdRows = 2;
@@ -18,7 +19,13 @@ sensors_event_t humidity, temp;
 void task1(void *pvParameters)
 {
   while (1) {
-    aht.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+    successAHT = aht.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+    if(!successAHT){
+      digitalWrite(ledPin,HIGH);
+    }
+    else
+      digitalWrite(ledPin,LOW);
+
 //    Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
 //    Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
     
@@ -30,16 +37,18 @@ void task1(void *pvParameters)
 void task2(void *pvParameters)
 {
   while(1){
-    // set cursor to first column, first row
-    lcd.setCursor(0, 0);
-    lcd.print("Temp: ");
-    lcd.print(temp.temperature,3);
-    lcd.print(" *C");
-    // set cursor to first column, second row
-    lcd.setCursor(0, 1);
-    lcd.print("Hum: ");
-    lcd.print(humidity.relative_humidity,3);
-    lcd.print(" %");
+    if(successAHT){
+      // set cursor to first column, first row
+      lcd.setCursor(0, 0);
+      lcd.print("Temp: ");
+      lcd.print(temp.temperature,3);
+      lcd.print(" *C");
+      // set cursor to first column, second row
+      lcd.setCursor(0, 1);
+      lcd.print("Hum: ");
+      lcd.print(humidity.relative_humidity,3);
+      lcd.print(" %");
+    }
     // set cursor to first column, third row
     lcd.setCursor(0, 2);
     lcd.print("Press: ");
@@ -55,6 +64,8 @@ void setup()
 {
   Serial.begin(9600);
   Serial.println("Medir temperatura y mostrarla con RTOS");
+  pinMode(ledPin,OUTPUT); // Configure GPIO 5 as led pin
+  
   // initialize LCD
   lcd.init();
   // turn on LCD backlight                      
@@ -62,6 +73,7 @@ void setup()
 
   unsigned status;
   status = bmp.begin(0x76);
+  // Check BMP280
   if (!status) {
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
                       "try a different address!"));
