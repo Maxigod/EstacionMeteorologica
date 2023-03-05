@@ -6,7 +6,7 @@
 Adafruit_AHTX0 aht;
 Adafruit_BMP280 bmp; // I2C
 
-const byte ledPin=5; // the number of the LED pin
+const byte ledPin=5; // The number of the LED PIN for communication failure
 bool successAHT=false; // to store whether the sensor lecture was successful or not
 // set the LCD number of columns and rows
 int lcdColumns = 16;
@@ -15,7 +15,7 @@ int lcdRows = 2;
 // if you don't know your display address, run an I2C scanner sketch
 LiquidCrystal_I2C lcd(0x27, lcdColumns, lcdRows);
 sensors_event_t humidity, temp;
-
+//task1 is dedicated to the reading of humidity and temperature data every 100 ms, but we will modify this sample period for a time of every 1 minute
 void task1(void *pvParameters)
 {
   while (1) {
@@ -34,7 +34,7 @@ void task1(void *pvParameters)
     
   }
 }
-
+//  task2 is dedicated to the writing in the LCD screen of pressure, temperature and humidity data every second, we are going to change the LCD for a ePaper screen
 void task2(void *pvParameters)
 {
   while(1){
@@ -61,7 +61,7 @@ void task2(void *pvParameters)
     lcd.clear();
   }
 }
-
+// General setup of communication system, in this case is I2C for each sensor and LCD screen
 void setup()
 {
   Serial.begin(9600);
