@@ -7,7 +7,7 @@ Adafruit_AHTX0 aht;
 Adafruit_BMP280 bmp; // I2C
 
 const byte ledPin=5; // the number of the LED pin
-bool successAHT=false;
+bool successAHT=false; // to store whether the sensor lecture was successful or not
 // set the LCD number of columns and rows
 int lcdColumns = 16;
 int lcdRows = 2;
@@ -20,16 +20,17 @@ void task1(void *pvParameters)
 {
   while (1) {
     successAHT = aht.getEvent(&humidity, &temp);// populate temp and humidity objects with fresh data
+    // check if we read the sensor successfully
     if(!successAHT){
-      digitalWrite(ledPin,HIGH);
+      digitalWrite(ledPin,HIGH); // if not, turn on an LED
     }
     else
-      digitalWrite(ledPin,LOW);
+      digitalWrite(ledPin,LOW); // otherwise, keep the LED off
 
 //    Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
 //    Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
     
-    vTaskDelay(pdMS_TO_TICKS(100)); // Espera .1 segundo
+    vTaskDelay(pdMS_TO_TICKS(100)); // wait 100 ms
     
   }
 }
@@ -37,6 +38,7 @@ void task1(void *pvParameters)
 void task2(void *pvParameters)
 {
   while(1){
+    // check if we read the sensor successfully
     if(successAHT){
       // set cursor to first column, first row
       lcd.setCursor(0, 0);
@@ -54,7 +56,7 @@ void task2(void *pvParameters)
     lcd.print("Press: ");
     lcd.print(bmp.readPressure(),3);
     lcd.print(" Pa");
-    vTaskDelay(pdMS_TO_TICKS(1000)); // Espera 1 segundo
+    vTaskDelay(pdMS_TO_TICKS(1000)); // wait 1 second
     
     lcd.clear();
   }
@@ -106,5 +108,5 @@ void setup()
 
 void loop()
 {
-  // No se utiliza en este ejemplo.
+  
 }
