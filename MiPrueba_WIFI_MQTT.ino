@@ -21,7 +21,7 @@ Referencia: https://www.luisllamas.es/como-usar-mqtt-en-el-esp8266-esp32/
 Adafruit_AHTX0 aht;
 bool successAHT=false;
 sensors_event_t humidity, temp;
-char *cad={"{\"Temperatura\":**}"};
+String cadena = "{\"Temperatura\":";
 
 WiFiClient ConexionWifi;
 PubSubClient client(ConexionWifi); //Recordar aquí que client es un objeto que después vamos a utilizar.
@@ -63,11 +63,6 @@ int IniciarMQTT(const char *MQTT_BROKER_ADDRESS, const uint16_t MQTT_PORT, const
   }
     return 0;
 }
-void completa(){
-    int aux =  temp.temperature;
-    cad[15] = aux/10+'0';
-    cad[16] = aux%10+'0';
-}
 void leerTemperatura(void *pvParameters)
 {
   while (1) {
@@ -78,10 +73,21 @@ void leerTemperatura(void *pvParameters)
     }
     // Serial.print("Temperature: "); Serial.print(temp.temperature); Serial.println(" degrees C");
     // Serial.print("Humidity: "); Serial.print(humidity.relative_humidity); Serial.println("% rH");
-    completa();
+    
+    // Crear una cadena que contenga el inicio del JSON, le agregamos la temperatura y la llave '}' de cierre
+    String str=cadena+String(temp.temperature)+String("}");
+
     Serial.print("Enviando el siguiente dato: ");
-    Serial.println(cad);
-    if(client.publish("esp32/telemetry",cad))
+    Serial.println(str);
+    
+    // Longitud del string + 1 por el caracter nulo
+    int str_len=str.length()+1;
+    // char* del tamaño de la cadena + 1
+    char out[str_len];
+    // copiar el String a char* para usarlo en la función de publish
+    str.toCharArray(out, str_len);
+
+    if(client.publish("esp32/telemetry",out))
     {
       Serial.println("Se envío datos a servidor MQTT");
     }else {
@@ -123,7 +129,6 @@ void setup() {
   }
   delay(1500); //Supongo que para estabilizar o esperar que realmente haya una conexión. Se podría revisar.
 
-
   Serial.println("Conectando a MQTT");
   
   if(!IniciarMQTT(MQTT_BROKER_ADDRESS, MQTT_PORT, MQTT_CLIENT_NAME))
@@ -134,17 +139,6 @@ void setup() {
 
   // Iniciar tarea de leer AHT 20 y enviar lectura a Broker MQTT
   init_AHT20();
-
-  // char *cadena_datos = "{\"Temperatura\":18}";
-  // Serial.print("Enviando el siguiente dato: ");
-  // Serial.println(cadena_datos);
-
-  // if(client.publish("esp32/telemetry",cadena_datos))
-  // {
-  // Serial.println("Se envió datos a servidor MQTT");
-  // }else {
-  //   Serial.println("Problema para enviar datos por MQTT");
-  // }  
   
 }
 
