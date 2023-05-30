@@ -25,7 +25,7 @@ GxEPD2_BW<GxEPD2_213_BN, GxEPD2_213_BN::HEIGHT> display(GxEPD2_213_BN(/*CS=5*/ 5
 #define INTENTOS_BH1750 4
 #define INTENTOS_WIFI 10
 #define INTENTOS_MQTT 5
-#define PIN_ANEMOMETRO 24
+#define PIN_ANEMOMETRO 23
 
 Adafruit_AHTX0 aht;   // Objeto para trabajar con el sensor de temperatura y humedad
 Adafruit_BMP280 bmp;  // Objeto para trabajar con el sensor de presión
