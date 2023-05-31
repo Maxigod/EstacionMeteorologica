@@ -91,7 +91,21 @@ int IniciarMQTT(const char *MQTT_BROKER_ADDRESS, const uint16_t MQTT_PORT, const
   }
   return 0; // regresa 0 en caso de fracaso
 }
+volatile int cont_anem=0;
 
+// Se incrementa el contador cuando el encoder registra un paso
+void IRAM_ATTR isr(){
+  cont_anem++;
+}
+double leer_anemometro(){
+  //Reiniciar contador
+  cont_anem=0;
+  //comienza a contar en el delay
+  delay(1000);
+  //A continuación, mandar el dato de cont al servidor como velocidad
+  double vel = 2*(3.1416)*(0.05)*(cont_anem);
+  return vel;
+}
 // Iniciar comunicación con los sensores del clima
 void iniciarSensores() {
   pinMode(PIN_ANEMOMETRO, INPUT_PULLUP); 
@@ -181,21 +195,6 @@ void iniciarSensores() {
     displayText("Conectado sensor BH1750");
     Serial.println("Conectado sensor BH1750");
   }
-}
-volatile int cont_anem=0;
-
-// Se incrementa el contador cuando el encoder registra un paso
-void IRAM_ATTR isr(){
-  cont_anem++;
-}
-double leer_anemometro(){
-  //Reiniciar contador
-  cont_anem=0;
-  //comienza a contar en el delay
-  delay(1000);
-  //A continuación, mandar el dato de cont al servidor como velocidad
-  double vel = 2*(3.1416)*(0.05)*(cont_anem);
-  return vel;
 }
 
 // Funcion que se ejecuta recurrentemente como tarea de RTOS
