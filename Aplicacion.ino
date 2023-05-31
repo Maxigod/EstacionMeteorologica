@@ -203,8 +203,14 @@ void leerSensores(void *pvParameters) {
   float tempr=0.0, hum=0.0, pres=0.0, luz=0.0,vel_viento = -1.0;
   int k = 0;
   while (1) {
+    for(int j=5;j>0;j--){
+      displayText("Lectura anemometro en: "+String(j)+" s");
+      vTaskDelay(pdMS_TO_TICKS(1000));
+    }
     vel_viento=leer_anemometro();
-
+    vTaskDelay(pdMS_TO_TICKS(500));
+    displayText("Lectura finalizada");
+    
     if (!aht.getEvent(&humidity, &temp)) {  // populate temp and humidity objects with fresh data
       Serial.println("Error al leer el sensor AHT20");
       displayText("Error al leer el sensor AHT20");
