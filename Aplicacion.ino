@@ -318,15 +318,15 @@ void leerSensores(void *pvParameters) {
       }
     }
 
-    // vTaskDelay(pdMS_TO_TICKS(60000));  // Espera 60 s
+    vTaskDelay(pdMS_TO_TICKS(300000));  // Espera 5 min
     
-    Serial.println("Entrando en modo de bajo consumo...");
-    Serial.flush(); // Limpiar el buffer del puerto serial antes de entrar en modo de bajo consumo
+    // Serial.println("Entrando en modo de bajo consumo...");
+    // Serial.flush(); // Limpiar el buffer del puerto serial antes de entrar en modo de bajo consumo
 
-    esp_sleep_enable_timer_wakeup(TIEMPO_DORMIDO * 1000000);
-    esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
-    esp_light_sleep_start();
-    Serial.println("Despierto!");
+    // esp_sleep_enable_timer_wakeup(TIEMPO_DORMIDO * 1000000);
+    // esp_sleep_pd_config(ESP_PD_DOMAIN_RTC_PERIPH, ESP_PD_OPTION_ON);
+    // esp_light_sleep_start();
+    // Serial.println("Despierto!");
   }
 }
 
